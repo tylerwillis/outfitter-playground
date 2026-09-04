@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { split, formatDollars } from "../src/split.js";
 
 test("splits an even amount equally", () => {
@@ -12,6 +13,15 @@ test("splits between two people", () => {
 
 test("distributes remainder cents", () => {
   assert.deepEqual(split(100, 3), [33.34, 33.33, 33.33]);
+});
+
+test("cli reports total with remainder cents", () => {
+  const result = spawnSync(process.execPath, ["bin/split.js", "100", "3"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /total:\s+\$100\.00/);
 });
 
 test("one person pays the whole bill", () => {
