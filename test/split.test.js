@@ -10,6 +10,13 @@ test("splits between two people", () => {
   assert.deepEqual(split(25.5, 2), [12.75, 12.75]);
 });
 
+test("distributes remainder cents", () => {
+  const shares = split(100, 3);
+
+  assert.deepEqual(shares, [33.34, 33.33, 33.33]);
+  assert.equal(shares.reduce((total, share) => total + share, 0).toFixed(2), "100.00");
+});
+
 test("one person pays the whole bill", () => {
   assert.deepEqual(split(42.42, 1), [42.42]);
 });
