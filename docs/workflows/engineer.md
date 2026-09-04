@@ -6,8 +6,8 @@ on the seeded bug
 ([docs/issues/0001-split-loses-cents.md](../issues/0001-split-loses-cents.md)):
 research → implement → draft pull request → independent
 [adversarial review](https://github.com/ai-outfitter/community-profiles/blob/main/workflows/adversarial-review/workflow.yaml)
-→ merge as the human. Run it in **your fork** — see the
-[README](../../README.md#reset-and-go-again) for fork and reset instructions.
+→ merge as the human. Run it in **your generated copy** — see the
+[README](../../README.md#reset-and-go-again) for reset instructions.
 
 Every step lands on the forge, so the record outlives the session: the bug
 becomes an issue, the fix becomes a pull request that references it, the
@@ -22,13 +22,12 @@ outfitter list
 
 `outfitter sync` fetches the community catalog pinned in
 [.agents/settings.yml](../../.agents/settings.yml). `outfitter list` should
-show `engineer`, `code-review`, `git-forge-delegator`, and the rest of the
-catalog.
+show `engineer`, `git-forge-delegator`, and the rest of the catalog; the
+engineer's loadout includes the `code-review` skill.
 
 ## 1. File the issue (delegate)
 
-Issues do not travel with forks, so your fork starts without one. Either file
-it yourself:
+Template-generated copies start without issues. Either file one yourself:
 
 ```sh
 gh issue create \
@@ -69,13 +68,15 @@ The catalog engineer carries the `scoped-issues` skill, so handed a raw bug
 report instead of an issue number it files the scoped issue itself (the
 README's guided run does exactly that, making step 1 optional).
 
-The engineer owns implementation and verification, and its loadout already
-carries the draft-pull-request lifecycle: it fixes `src/split.js`, adds the
-regression test the issue demands, verifies with `npm test`, pushes a
-semantic branch (`fix/...`), opens the pull request **as a draft**, iterates
+The engineer owns implementation, verification, and review. Its loadout
+already carries the draft-pull-request lifecycle: it fixes `src/split.js`,
+adds the regression test the issue demands, verifies with `npm test`, pushes
+a semantic branch (`fix/...`), opens the pull request **as a draft**, iterates
 until CI is green, and only then marks it ready. Ready is the signal that
-requests review. If it stops to report a scope conflict instead of pushing,
-that is the agent working as designed — answer it and re-run.
+requests review. With no external reviewer configured in the playground, the
+engineer starts its own adversarial review with cold-context subagents and
+fixes any blocking findings. If it stops to report a scope conflict instead
+of pushing, that is the agent working as designed — answer it and re-run.
 
 Prefer a different harness? The same composed profile runs through any of
 them:
@@ -86,15 +87,16 @@ outfitter run --harness claude
 outfitter run --harness codex
 ```
 
-## 3. Adversarial review (code-review)
+## 3. Inspect or repeat the adversarial review
 
-Review with a **cold context** — a fresh session, a distinct agent, no stake
-in the change passing. The catalog's `code-review` agent composes the
-`code-review` skill with the adversarial-review practice: assume the change
-is wrong and make the diff prove otherwise.
+The engineer's `code-review` skill delegates each review lens to a
+**cold-context subagent** with no stake in the change passing, then merges the
+findings into one formal review. The first pass happens automatically after
+the pull request becomes ready. Inspect it with `gh pr view --web`. To repeat
+the review against a new revision, start a fresh engineer session:
 
 ```sh
-outfitter run code-review
+outfitter run engineer
 ```
 
 ```text
@@ -115,11 +117,11 @@ issue, the review should catch it.
 
 ## 4. Rework, then merge (human)
 
-If the review requested changes, send the findings back through the
-engineer:
+If the review requested changes and the original session did not already fix
+them, send the findings back through the engineer:
 
 ```sh
-outfitter run
+outfitter run engineer
 ```
 
 ```text
@@ -141,7 +143,7 @@ gh pr merge 2 --squash
 You just ran the loop this playground exists to teach: scoped issue →
 implementation on a branch → draft PR gated on CI → cold-context adversarial
 review → rework → human merge. Now
-[reset your fork](../../README.md#reset-and-go-again) and run it again with a
+[reset your copy](../../README.md#reset-and-go-again) and run it again with a
 different harness, a different prompt, or with yourself playing one of the
 lanes.
 

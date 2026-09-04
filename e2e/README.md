@@ -18,12 +18,22 @@ e2e/demo.sh codex      # same flow under codex
 
 You land in an interactive engineer session with the demo script printed:
 paste the prompt, watch it file the issue and work it into a CI-gated,
-ready-for-review PR, then exit the session — you stay in a shell inside the
-demo environment to run the cold-context review
-(`outfitter run code-review --harness <h>`) and merge.
+ready-for-review PR. With no external reviewer configured, the engineer then
+runs the adversarial review itself using cold-context subagents and fixes any
+blocking findings. When the session exits, you stay in a shell inside the
+demo environment; run `gh pr view --web` to inspect the review before you
+merge. To repeat the review in a fresh session, run
+`outfitter run engineer --harness <h>` and ask it to review the open pull
+request against the linked issue's acceptance criteria.
 
-`gh` works via `GH_TOKEN` from `gh auth token`. `ANTHROPIC_API_KEY` /
+Live sessions validate GitHub CLI authentication before any arena reset, then
+pass the resulting token to `gh` and the GitHub MCP. `ANTHROPIC_API_KEY` /
 `OPENAI_API_KEY` are passed through when set (pi needs one of them).
+
+The Pi path makes one extension-free `OUTFITTER_AUTH_OK` model call before it
+resets the arena or installs profile extensions. This both verifies the selected
+provider and refreshes OAuth state inside the isolated demo HOME. If it fails,
+authenticate with Pi normally and rerun the demo; your checkout is left intact.
 
 ## Other commands
 
@@ -33,5 +43,11 @@ e2e/demo.sh check      # free, no model calls: bug present, suite green,
                        # agents resolved from community-profiles
 e2e/demo.sh reset      # wipe the demo HOME for a from-scratch start
 ```
+
+Use `e2e/demo.sh check` as the demo preflight. It does not require or inspect a
+GitHub credential; only the public catalog sync uses the network. It runs sync
+and strict validation inside the isolated demo HOME; a plain `outfitter
+validate --strict` also composes user-level settings from the host and can
+report unrelated personal configuration.
 
 `PLAYGROUND_HOME=<dir>` overrides the demo HOME location.

@@ -15,7 +15,10 @@ prompt, or division of labor.
 1. **Generate your playground** — a copy from this template, not a fork:
    forks need one-time UI clicks before Actions run and issues work;
    generated repos have both from the first commit (needs
-   [Node.js](https://nodejs.org) 20+ and [`gh`](https://cli.github.com/)):
+   [Node.js](https://nodejs.org) 22.19+, [`gh`](https://cli.github.com/), and
+   [`github-mcp-server`](https://github.com/github/github-mcp-server/releases/latest)
+   on `PATH`; on macOS, install the server with
+   `brew install github-mcp-server`):
 
    ```sh
    gh repo create outfitter-playground --template ai-outfitter/outfitter-playground --public --clone
@@ -109,6 +112,16 @@ Closed issues and merged PRs stay in your copy's history — that is fine;
 the next run starts from a fresh issue. (No `upstream` remote?
 `git remote add upstream https://github.com/ai-outfitter/outfitter-playground.git`.)
 
+## Take the workflow to a real project
+
+The playground proves the loop; your `.agents/` tree is what makes the
+method durable. Run `outfitter setup` from a real project to create project
+or user configuration. To share the same agents and skills across a team,
+create a personal or organization `.agents` repository in the
+[Outfitter dashboard](https://ai-outfitter.com/dashboard/), then follow
+[Share one catalog](https://ai-outfitter.com/docs/outfitter/runbooks/share-one-catalog/)
+to pin, sync, and verify it.
+
 ## The exhibit
 
 `split` is a zero-dependency Node CLI that splits a bill among people. Its
@@ -138,13 +151,14 @@ AGENTS.md                repository instructions agents follow (CLAUDE.md symlin
 ## Demo it
 
 [e2e/demo.sh](e2e/README.md) launches the engineer session with everything
-wired from what you already have — `gh auth token`, your Claude Code/Codex
-logins — under a persistent, isolated HOME in `/tmp`. It runs in this
-checkout, whose origin must be **your generated playground** (the script
-refuses an org-repo origin and verifies template lineage), and resets it to
-the upstream state each run so issues and PRs land on your copy and the
-seeded bug is back. Pick a harness per run; `check` is a free sanity pass
-and `reset` wipes the demo HOME.
+wired from what you already have — valid GitHub CLI authentication and your
+Claude Code/Codex logins — under a persistent, isolated HOME in `/tmp`. It
+runs in this checkout, whose origin must be **your generated playground** (the
+script refuses an org-repo origin and verifies template lineage), and resets
+it to the upstream state each run so issues and PRs land on your copy and the
+seeded bug is back. Pick a harness per run; `check` is a free sanity pass that
+does not require or inspect GitHub credentials (its catalog sync is the only
+networked step), and `reset` wipes the demo HOME.
 
 ```sh
 e2e/demo.sh            # claude — or: pi, codex, check, reset
