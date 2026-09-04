@@ -13,8 +13,12 @@ export function split(amount, people) {
     throw new RangeError(`people must be a positive integer, got ${people}`);
   }
   const cents = Math.round(amount * 100);
-  const share = Math.floor(cents / people);
-  return Array.from({ length: people }, () => share / 100);
+  const baseShare = Math.floor(cents / people);
+  const remainder = cents % people;
+  return Array.from(
+    { length: people },
+    (_, index) => (baseShare + (index < remainder ? 1 : 0)) / 100,
+  );
 }
 
 /** Format a dollar value for display. */
